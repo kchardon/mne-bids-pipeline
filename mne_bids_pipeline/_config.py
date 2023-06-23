@@ -1046,6 +1046,26 @@ order to remove the artifacts. The ICA procedure can be configured in various
 ways using the configuration options you can find below.
 """
 
+ssp_type: Literal["artifacts", "freq_bands"] = "artifacts"
+"""
+Whether to run SSP on EOG and ECG artifacts or on some frequency band.
+"""
+
+ssp_freq_band: Optional[Dict[str, float]] = None
+"""
+The frequency band on which to apply the SSP.
+
+If `None` (default), the SSP is applied on all the frequencies.
+You can also only choose a lower frequency or a higher frequency.
+???+ example "Example"
+    ```python
+    ssp_freq_band = {'l_freq': 0.1, 'h_freq': 49}
+    ssp_freq_band = {'l_freq': 3}
+    ssp_freq_band = {'h_freq': 60}
+    ssp_freq_band = None
+    ```
+"""
+
 min_ecg_epochs: int = 5
 """
 Minimal number of ECG epochs needed to compute SSP or ICA rejection.
