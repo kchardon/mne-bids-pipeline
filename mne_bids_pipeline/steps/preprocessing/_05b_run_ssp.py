@@ -8,7 +8,7 @@ from types import SimpleNamespace
 
 import mne
 from mne.preprocessing import create_eog_epochs, create_ecg_epochs
-from mne import compute_proj_evoked, compute_proj_epochs
+from mne import compute_proj_evoked, compute_proj_epochs, compute_proj_raw
 from mne_bids import BIDSPath
 from mne.utils import _pl
 
@@ -200,6 +200,34 @@ def run_ssp(
                 plt.close(fig)
     elif cfg.ssp_type == 'freq_bands':
         
+        projs = {}
+        n_projs = cfg.n_proj_freq
+        l_freq = None
+        h_req = None
+        freq = cfg.ssp_freq_band
+        
+        if freq is None:
+            freq = {}
+        
+        if 'l_freq' in freq.keys():
+            l_freq = freq['l_freq']
+        if 'h_freq' in freq.keys():
+            h_freq = freq['h_freq']
+        
+        if cfg.ssp_meg == "auto":
+            cfg.ssp_meg = "combined" if cfg.use_maxwell_filter else "separate"
+        
+        if not any(n_projs):
+            continue
+        
+        raw_filtered = raw.copy().filter(l_freq = l_freq, h_req = h_freq)
+        
+        projs['freq_bands'] = compute_proj_raw(
+            raw_filtered, meg=cfg.ssp_meg, **n_projs
+        )
+        
+        mne.write_proj(out_files["proj"], sum(projs.values(), []), overwrite=True)
+        assert len(in_files) == 0, in_files.keys()
         
     return out_files
 
