@@ -1089,6 +1089,11 @@ n_proj_ecg: Dict[str, float] = dict(n_mag=1, n_grad=1, n_eeg=1)
 Number of SSP vectors to create for ECG artifacts for each channel type.
 """
 
+n_proj_freq: Dict[str, float] = dict(n_mag=2, n_grad=2, n_eeg=0)
+"""
+Number of SSP vectors to create for freq_bands for each channel type.
+"""
+
 ecg_proj_from_average: bool = True
 """
 Whether to calculate the ECG projection vectors based on the the averaged or
