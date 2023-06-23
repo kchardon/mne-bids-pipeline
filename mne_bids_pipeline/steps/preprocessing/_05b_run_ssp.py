@@ -217,17 +217,15 @@ def run_ssp(
         if cfg.ssp_meg == "auto":
             cfg.ssp_meg = "combined" if cfg.use_maxwell_filter else "separate"
         
-        if not any(n_projs):
-            continue
-        
-        raw_filtered = raw.copy().filter(l_freq = l_freq, h_req = h_freq)
-        
-        projs['freq_bands'] = compute_proj_raw(
-            raw_filtered, meg=cfg.ssp_meg, **n_projs
-        )
-        
-        mne.write_proj(out_files["proj"], sum(projs.values(), []), overwrite=True)
-        assert len(in_files) == 0, in_files.keys()
+        if any(n_projs):    
+            raw_filtered = raw.copy().load_data().filter(l_freq = l_freq, h_freq = h_freq)
+            
+            projs['freq_bands'] = compute_proj_raw(
+                raw_filtered, meg=cfg.ssp_meg, **n_projs
+            )
+            
+            mne.write_proj(out_files["proj"], sum(projs.values(), []), overwrite=True)
+            assert len(in_files) == 0, in_files.keys()
         
     return out_files
 
@@ -258,6 +256,9 @@ def get_config(
         ch_types=config.ch_types,
         epochs_decim=config.epochs_decim,
         use_maxwell_filter=config.use_maxwell_filter,
+        ssp_type=config.ssp_type,
+        ssp_freq_band=config.ssp_freq_band,
+        n_proj_freq=config.n_proj_freq
     )
     return cfg
 
